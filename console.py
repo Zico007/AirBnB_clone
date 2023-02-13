@@ -68,12 +68,18 @@ class HBNBCommand(cmd.Cmd):
         match = re.search(r"\.", arg)
         if match is not None:
             argl = [arg[:match.span()[0]], arg[match.span()[1]:]]
+            if argl[0] not in self.__classes:
+                if not argl[0]:
+                    print("** class name missing **")
+                else:
+                    print("** class doesn't exist **")
+                return False
             match = re.search(r"\((.*?)\)", argl[1])
             if match is not None:
                 command = [argl[1][:match.span()[0]], match.group()[1:-1]]
-                if command[0] in argdict.keys():
-                    call = "{} {}".format(argl[0], command[1])
-                    return argdict[command[0]](call)
+            if command[0] in argdict.keys():
+                call = "{} {}".format(argl[0], command[1])
+                return argdict[command[0]](call)
         print("*** Unknown syntax: {}".format(arg))
         return False
 
@@ -161,10 +167,12 @@ class HBNBCommand(cmd.Cmd):
 
     def do_update(self, arg):
         """Usage: update <class> <id> <attribute_name> <attribute_value> or
-       <class>.update(<id>, <attribute_name>, <attribute_value>) or
-       <class>.update(<id>, <dictionary>)
+        <class>.update(<id>, <attribute_name>, <attribute_value>) or
+        <class>.update(<id>, <dictionary>)
+
         Update a class instance of a given id by adding or updating
-        a given attribute key/value pair or dictionary."""
+        a given attribute key/value pair or dictionary.
+        """
         argl = parse(arg)
         objdict = storage.all()
 
